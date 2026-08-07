@@ -22,10 +22,10 @@ detail_maps_uv_coords
   
 **triplanar uvs -** triplanar uv projection. 
 
-Source Ben Golus : https://bgolus.medium.com/normal-mapping-for-a-triplanar-shader-10bf39dca05a
+Source : Ben Golus https://bgolus.medium.com/normal-mapping-for-a-triplanar-shader-10bf39dca05a
   
 **cheap triplanar uvs -** A basic triplanar uv projection. 
 
-Source Inigo Quilez : https://iquilezles.org/articles/biplanar/
+Source : Inigo Quilez https://iquilezles.org/articles/biplanar/
   
 
