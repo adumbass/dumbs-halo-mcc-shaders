@@ -20,6 +20,7 @@ PARAM(float, analytical_specular_coefficient);
 PARAM(float3, specular_tint);
 PARAM(float, specular_power);
 PARAM_SAMPLER_2D(specular_map);
+PARAM(float4, specular_map_xform);
 
 // specular from environment map
 PARAM(float, environment_map_coefficient);
@@ -41,6 +42,7 @@ PARAM(float3, ambient_tint);
 
 // parameter textures
 PARAM_SAMPLER_2D(occlusion_parameter_map);
+PARAM(float4, occlusion_parameter_map_xform);
 
 // subsurface
 PARAM(float, subsurface_coefficient);
@@ -48,6 +50,7 @@ PARAM(float3, subsurface_tint);
 PARAM(float, subsurface_propagation_bias);
 PARAM(float, subsurface_normal_detail);
 PARAM_SAMPLER_2D(subsurface_map);
+PARAM(float4, subsurface_map_xform);
 
 // transparence
 PARAM(float, transparence_coefficient);
@@ -55,6 +58,7 @@ PARAM(float3, transparence_tint);
 PARAM(float, transparence_normal_bias);
 PARAM(float, transparence_normal_detail);
 PARAM_SAMPLER_2D(transparence_map);
+PARAM(float4, transparence_map_xform);
 
 // final tint
 PARAM(float3, final_tint);
@@ -145,7 +149,8 @@ void calc_material_organism_ps(
 	const float3 surface_normal= SHADER_DATA.common.tangent_frame[2];
 
 	// sample specular map
-	float4 specular_map_color= sampleBiasGlobal2D(specular_map, SHADER_DATA.common.texcoord);
+	//float4 specular_map_color= sampleBiasGlobal2D(specular_map, SHADER_DATA.common.texcoord);
+	float4 specular_map_color= sample_base_maps_ps(specular_map, specular_map_xform, SHADER_DATA);
 	//float power_or_roughness= specular_map_color.a * specular_power;	
 	SHADER_DATA.power_or_roughness_organism_mat= specular_map_color.a * specular_power;	
 
@@ -225,7 +230,8 @@ void calc_material_organism_ps(
 
 	
 	// begin the hack of skin	
-	float2 occlusion_map_value= sampleBiasGlobal2D(occlusion_parameter_map, SHADER_DATA.common.texcoord).xy;
+	//float2 occlusion_map_value= sampleBiasGlobal2D(occlusion_parameter_map, SHADER_DATA.common.texcoord).xy;
+	float2 occlusion_map_value= sample_base_maps_ps(occlusion_parameter_map, occlusion_parameter_map_xform, SHADER_DATA).xy;
 	float ambient_occlusion= occlusion_map_value.x;
 	float visibility_occlusion= occlusion_map_value.y;	
 
@@ -263,7 +269,8 @@ void calc_material_organism_ps(
 	FORCE_BRANCH
 	if ( subsurface_coefficient > 0.01f)
 	{
-		float4 subsurface_map_color= sampleBiasGlobal2D(subsurface_map, SHADER_DATA.common.texcoord);
+		//float4 subsurface_map_color= sampleBiasGlobal2D(subsurface_map, SHADER_DATA.common.texcoord);
+		float4 subsurface_map_color= sample_base_maps_ps(subsurface_map, subsurface_map_xform, SHADER_DATA);
 
 		float3 subsurface_normal=
 			normalize(			
@@ -314,8 +321,8 @@ void calc_material_organism_ps(
 	FORCE_BRANCH
 	if ( transparence_coefficient > 0.01f)
 	{
-		float4 transparence_map_color= sampleBiasGlobal2D(transparence_map, SHADER_DATA.common.texcoord);
-
+		//float4 transparence_map_color= sampleBiasGlobal2D(transparence_map, SHADER_DATA.common.texcoord);
+		float4 transparence_map_color= sample_base_maps_ps(transparence_map, transparence_map_xform, SHADER_DATA);
 		float3 area_radiance_transparence= 0.0f;
 		calculate_area_specular_phong_order_2(
 			-SHADER_DATA.common.view_dir,
@@ -408,7 +415,8 @@ void calc_material_analytic_specular_organism_ps(
 	float3 surface_normal= SHADER_DATA.common.tangent_frame[2];
 
 	// sample specular map
-	float4 specular_map_color= sampleBiasGlobal2D(specular_map, SHADER_DATA.common.texcoord);
+	//float4 specular_map_color= sampleBiasGlobal2D(specular_map, SHADER_DATA.common.texcoord);
+	float4 specular_map_color= sample_base_maps_ps(specular_map, specular_map_xform, SHADER_DATA);
 	SHADER_DATA.power_or_roughness_organism_mat= specular_map_color.a * specular_power * dot(specular_map_color.rgb, specular_map_color.rgb);	
 
 	// calculate simple dynamic lights	
@@ -436,7 +444,8 @@ void calc_material_analytic_specular_organism_ps(
 			specular_tint * specular_map_color.rgb;
 
 	// begin the hack of skin	
-	float2 occlusion_map_value= sampleBiasGlobal2D(occlusion_parameter_map, SHADER_DATA.common.texcoord).xy;
+	//float2 occlusion_map_value= sampleBiasGlobal2D(occlusion_parameter_map, SHADER_DATA.common.texcoord).xy;
+	float2 occlusion_map_value= sample_base_maps_ps(occlusion_parameter_map, occlusion_parameter_map_xform, SHADER_DATA).xy;
 	float ambient_occlusion= occlusion_map_value.x;
 	float visibility_occlusion= occlusion_map_value.y;	
 
@@ -445,8 +454,8 @@ void calc_material_analytic_specular_organism_ps(
 	FORCE_BRANCH
 	if ( subsurface_coefficient > 0.01f)
 	{
-		float4 subsurface_map_color= sampleBiasGlobal2D(subsurface_map, SHADER_DATA.common.texcoord);
-
+		//float4 subsurface_map_color= sampleBiasGlobal2D(subsurface_map, SHADER_DATA.common.texcoord);
+		float4 subsurface_map_color= sample_base_maps_ps(subsurface_map, subsurface_map_xform, SHADER_DATA);
 		float3 subsurface_normal=
 			normalize(			
 				lerp(surface_normal, SHADER_DATA.bump_normal, subsurface_normal_detail) +				

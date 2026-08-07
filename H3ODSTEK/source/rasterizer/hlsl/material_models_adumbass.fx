@@ -66,23 +66,6 @@ PARAM(float4,	material_texture_xform);				//texture matrix
 PARAM(bool, use_material_texture);
 PARAM(bool, order3_area_specular);
 PARAM(bool, no_dynamic_lights);
-/*
-//*****************************************************************************
-// cook torrance
-//*****************************************************************************
-#if MATERIAL_TYPE(material_type) == MATERIAL_TYPE_cook_torrance
-#include "cook_torrance_adumbass.fx"
-#define NO_ALPHA_TO_COVERAGE
-#endif
-
-//*****************************************************************************
-// cook torrance with "pbr" maps
-//*****************************************************************************
-#if MATERIAL_TYPE(material_type) == MATERIAL_TYPE_cook_torrance_pbr_maps
-#include "cook_torrance_adumbass.fx"
-#define NO_ALPHA_TO_COVERAGE
-#endif
-*/
 
 //*****************************************************************************
 // diffuse only

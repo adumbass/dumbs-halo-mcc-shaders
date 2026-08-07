@@ -153,7 +153,8 @@ float4 calc_albedo_two_change_color_ps(
 {
 	float4 base = sample_base_maps_ps(base_map, base_map_xform, SHADER_DATA);
 	float4 detail = sample_detail_maps_ps(detail_map, detail_map_xform, SHADER_DATA);
-	float4 change_color = sampleBiasGlobal2D(change_color_map, transform_texcoord(SHADER_DATA.common.texcoord, change_color_map_xform));
+	float4 change_color = sample_base_maps_ps(change_color_map, change_color_map_xform, SHADER_DATA);
+	//float4 change_color = sampleBiasGlobal2D(change_color_map, transform_texcoord(SHADER_DATA.common.texcoord, change_color_map_xform));
 
 	change_color.xyz=	((1.0f-change_color.x) + change_color.x*primary_change_color.xyz)*
 						((1.0f-change_color.y) + change_color.y*secondary_change_color.xyz);
@@ -171,7 +172,7 @@ float4 calc_albedo_four_change_color_ps(
 {
 	float4 base = sample_base_maps_ps(base_map, base_map_xform, SHADER_DATA);
 	float4 detail = sample_detail_maps_ps(detail_map, detail_map_xform, SHADER_DATA);
-	float4 change_color=	sampleBiasGlobal2D(change_color_map,	transform_texcoord(SHADER_DATA.common.texcoord, change_color_map_xform));
+	float4 change_color = sample_base_maps_ps(change_color_map, change_color_map_xform, SHADER_DATA);
 
 	change_color.xyz=	((1.0f-change_color.x) + change_color.x*primary_change_color.xyz)	*
 						((1.0f-change_color.y) + change_color.y*secondary_change_color.xyz)	*
@@ -234,7 +235,7 @@ float4 calc_albedo_color_mask_ps(
 {
 	float4 base = sample_base_maps_ps(base_map, base_map_xform, SHADER_DATA);
 	float4 detail = sample_detail_maps_ps(detail_map, detail_map_xform, SHADER_DATA);
-	float4  color_mask=	sampleBiasGlobal2D(color_mask_map,	transform_texcoord(SHADER_DATA.common.texcoord, color_mask_map_xform));
+	float4 change_color = sample_base_maps_ps(color_mask_map, color_mask_map_xform, SHADER_DATA);
 
 	float4 tint_color=	((1.0f-color_mask.x) + color_mask.x * albedo_color.xyzw / float4(neutral_gray.xyz, 1.0f))		*		// ###ctchou $PERF do this divide in the pre-process
 						((1.0f-color_mask.y) + color_mask.y * albedo_color2.xyzw / float4(neutral_gray.xyz, 1.0f))		*

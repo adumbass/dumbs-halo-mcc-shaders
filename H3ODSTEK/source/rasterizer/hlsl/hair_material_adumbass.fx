@@ -19,8 +19,11 @@ PARAM(float, analytical_specular_coefficient);
 PARAM(float3, specular_tint);
 PARAM(float, specular_power);
 PARAM_SAMPLER_2D(specular_map);
+PARAM(float4, specular_map_xform);
 PARAM_SAMPLER_2D(specular_shift_map);
+PARAM(float4, specular_shift_map_xform);
 PARAM_SAMPLER_2D(specular_noise_map);
+PARAM(float4, specular_noise_map_xform);
 
 // specular from environment map
 PARAM(float, environment_map_coefficient);
@@ -114,9 +117,11 @@ void calc_material_hair_ps(
 
 	//const float3 SHADER_DATA.bump_normal= SHADER_DATA.common.tangent_frame[2];
 	
-	float specular_shift= sample2D(specular_shift_map, SHADER_DATA.common.texcoord).x;
+	//float specular_shift= sample2D(specular_shift_map, SHADER_DATA.common.texcoord).x;
+	float specular_shift= sample_base_maps_ps(specular_shift_map, specular_shift_map_xform, SHADER_DATA).x;
 	specular_shift-= 0.5f;
-	float specular_noise= sample2D(specular_noise_map, SHADER_DATA.common.texcoord).x;
+	//float specular_noise= sample2D(specular_noise_map, SHADER_DATA.common.texcoord).x;
+	float specular_noise= sample_base_maps_ps(specular_noise_map, specular_noise_map_xform, SHADER_DATA).x;
 
 	float3 tangent_0= surface_tangent + surface_normal*specular_shift;
 	float3 tangent_1= surface_tangent - surface_normal*specular_shift*specular_noise;
@@ -137,7 +142,8 @@ void calc_material_hair_ps(
 	
 
 	// sample specular map
-	float4 specular_map_color= sample2D(specular_map, SHADER_DATA.common.texcoord);
+	//float4 specular_map_color= sample2D(specular_map, SHADER_DATA.common.texcoord);
+	float4 specular_map_color= sample_base_maps_ps(specular_map, specular_map_xform, SHADER_DATA);
 	float power_or_roughness= specular_map_color.a * specular_power;	
 
 	// calculate simple dynamic lights	
@@ -277,7 +283,8 @@ void calc_material_analytic_specular_hair_ps(
 	float3 surface_tangent= SHADER_DATA.common.tangent_frame[1];
 
 	// sample specular map
-	float4 specular_map_color= sample2D(specular_map, SHADER_DATA.common.texcoord);
+	//float4 specular_map_color= sample2D(specular_map, SHADER_DATA.common.texcoord);
+	float4 specular_map_color= sample_base_maps_ps(specular_map, specular_map_xform, SHADER_DATA);
 	float power_or_roughness= specular_map_color.a * specular_power;	
 
 	// calculate diffuse color
@@ -293,10 +300,12 @@ void calc_material_analytic_specular_hair_ps(
 		float3 reflect_half= SHADER_DATA.common.view_dir + SHADER_DATA.dominant_light_direction;
 		reflect_half= normalize(reflect_half);
 
-		float specular_shift= sample2D(specular_shift_map, SHADER_DATA.common.texcoord).x;
+		//float specular_shift= sample2D(specular_shift_map, SHADER_DATA.common.texcoord).x;
+		float specular_shift= sample_base_maps_ps(specular_shift_map, specular_shift_map_xform, SHADER_DATA).x;
 		specular_shift-= 0.5f;
 
-		float specular_noise= sample2D(specular_noise_map, SHADER_DATA.common.texcoord).x;
+		//float specular_noise= sample2D(specular_noise_map, SHADER_DATA.common.texcoord).x;
+		float specular_noise= sample_base_maps_ps(specular_noise_map, specular_noise_map_xform, SHADER_DATA).x;
 
 		float3 tangent_0= surface_tangent + surface_normal*specular_shift;
 		float3 tangent_1= surface_tangent - surface_normal*specular_shift*specular_noise;

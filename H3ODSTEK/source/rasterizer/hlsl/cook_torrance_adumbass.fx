@@ -111,7 +111,8 @@ void calc_material_analytic_specular_cook_torrance_ps(
 	if (use_material_texture)
 	{	
 		//over ride shader supplied values with what's from the texture
-		SHADER_DATA.spatially_varying_material_parameters= sampleBiasGlobal2D(material_texture, transform_texcoord(SHADER_DATA.common.texcoord, material_texture_xform));
+		//SHADER_DATA.spatially_varying_material_parameters= sampleBiasGlobal2D(material_texture, transform_texcoord(SHADER_DATA.common.texcoord, material_texture_xform));
+		SHADER_DATA.spatially_varying_material_parameters= sample_base_maps_ps(material_texture, material_texture_xform, SHADER_DATA);
 	}
 
 	float vertex_n_dot_l = SHADER_DATA.prt_ravi_diff.w;
@@ -182,7 +183,8 @@ void calc_material_analytic_specular_cook_torrance_pbr_maps_ps(
 	// the following parameters can be supplied in the material texture
 	// r: specular coefficient
 	// g: roughless
-	SHADER_DATA.spatially_varying_material_parameters = sampleBiasGlobal2D(material_texture, transform_texcoord(SHADER_DATA.common.texcoord, material_texture_xform)).xxyy;
+	//SHADER_DATA.spatially_varying_material_parameters = sampleBiasGlobal2D(material_texture, transform_texcoord(SHADER_DATA.common.texcoord, material_texture_xform)).xxyy;
+	SHADER_DATA.spatially_varying_material_parameters = sample_base_maps_ps(material_texture, material_texture_xform, SHADER_DATA).xxyy;
 	SHADER_DATA.spatially_varying_material_parameters.y = albedo_blend;
 	SHADER_DATA.spatially_varying_material_parameters.z = environment_map_specular_contribution;
 	
@@ -620,7 +622,8 @@ void calc_material_cook_torrance_pbr_maps_ps(
 	}
 	else
 	{
-		spec_tint = sampleBiasGlobal2D(spec_tint_map, transform_texcoord(SHADER_DATA.common.texcoord, spec_tint_map_xform)).xyz;
+		//spec_tint = sampleBiasGlobal2D(spec_tint_map, transform_texcoord(SHADER_DATA.common.texcoord, spec_tint_map_xform)).xyz;
+		spec_tint = sample_base_maps_ps(spec_tint_map, spec_tint_map_xform, SHADER_DATA).xyz;
 	}
 
 	SHADER_DATA.specular_power = GET_MATERIAL_SPECULAR_POWER(material_type)(SHADER_DATA.spatially_varying_material_parameters.a);
